@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@forevolve/bootstrap-dark@4.0.0/dist/css/bootstrap-dark.min.css"
+    />
+    <link rel="stylesheet" href="client-style.css" />
+    <title>Chat example</title>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar navbar-dark bg-dark">
+        <a class="navbar-brand">Chat example</a>
+      </nav>
+    </header>
+    <main>
+      <section>
+        <div class="container-fluid">
+          <div class="mb-3 mt-3">
+            <ul style="list-style: none" class="messages-list"></ul>
+          </div>
+          <div class="row">
+            <div class="mt-4 col-12 col-md-2">
+              <input class="form-control username-input" placeholder="Ваше имя" />
+            </div>
+            <div class="mt-4 col-12 col-md-8">
+              <input class="form-control message-input" placeholder="Сообщение..." />
+            </div>
+            <div class="mt-4 mb-4 col-12 col-md-2">
+              <button class="btn btn-primary send-btn btn-block">Отправить</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script src="client-script.js"></script>
+  </body>
+</html>
