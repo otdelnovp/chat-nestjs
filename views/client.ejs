@@ -8,7 +8,18 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@forevolve/bootstrap-dark@4.0.0/dist/css/bootstrap-dark.min.css"
     />
-    <link rel="stylesheet" href="client-style.css" />
+    <style type="text/css">
+      .message {
+        position: relative;
+      }
+
+      .date {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        font-size: 14px;
+      }
+    </style>
     <title>Chat example</title>
   </head>
   <body>
@@ -40,6 +51,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
-    <script src="client-script.js"></script>
+    <script src="/client.js"></script>
   </body>
 </html>

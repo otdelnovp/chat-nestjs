@@ -23,7 +23,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   }
 
   afterInit(server: any) {
-    console.log(server);
+    // console.log(server);
   }
 
   handleConnection(client: Socket) {

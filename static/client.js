@@ -1,5 +1,5 @@
 const app = () => {
-  const socket = io('https://chat-7u33.onrender.com');
+  const socket = io('http://localhost:3444');
   const msgInput = document.querySelector('.message-input');
   const msgList = document.querySelector('.messages-list');
   const sendBtn = document.querySelector('.send-btn');
@@ -8,7 +8,7 @@ const app = () => {
 
   const getMessages = async () => {
     try {
-      const { data } = await axios.get('https://chat-7u33.onrender.com/api/chat');
+      const { data } = await axios.get('http://localhost:3444/api/chat');
 
       renderMessages(data);
 
@@ -18,7 +18,7 @@ const app = () => {
     }
   };
 
-  getMessages();
+  // getMessages();
 
   const handleSendMessage = text => {
     if (!text.trim()) {
@@ -70,6 +70,34 @@ const app = () => {
     messages.push(message);
     renderMessages(messages);
   });
+
+  const setUsers = async () => {
+    try {
+      const resp = await axios({
+        method: 'post',
+        url: 'http://localhost:3444/api/users',
+        headers: {},
+        data: [
+          {
+            id: '82879df6-7bfc-11e6-80d5-10604ba8b340',
+            name: 'Лефтеров Максим Андреевич',
+          },
+          {
+            id: '56327ba6-799b-11e6-80d5-10604ba8b340',
+            name: 'Хайков Михаил Яковлевич',
+          },
+          {
+            id: '17d33e46-499b-11e6-80d4-10604ba8b340',
+            name: 'Клюева Ольга Владимировна',
+          },
+        ],
+      });
+      console.log(resp);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  // setUsers();
 };
 
 app();
