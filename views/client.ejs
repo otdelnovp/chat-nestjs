@@ -26,10 +26,18 @@
     <header>
       <nav class="navbar navbar-dark bg-dark">
         <a class="navbar-brand">Chat example</a>
+        <span class="selected-user"></span>
       </nav>
     </header>
     <main>
-      <section>
+      <section class="users-page">
+        <div class="container-fluid">
+          <div class="mb-3 mt-3">
+            <ul style="list-style: none" class="users-list p-0"></ul>
+          </div>
+        </div>
+      </section>
+      <section class="messages-page d-none">
         <div class="container-fluid">
           <div class="mb-3 mt-3">
             <ul style="list-style: none" class="messages-list"></ul>

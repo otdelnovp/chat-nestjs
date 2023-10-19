@@ -1,14 +1,57 @@
+const BASE_URL = 'http://localhost:3444';
+
 const app = () => {
-  const socket = io('http://localhost:3444');
+  const socket = io(BASE_URL);
+
+  let selectedUser = null;
+  const selectedUserName = document.querySelector('.selected-user');
+
+  const usersPage = document.querySelector('.users-page');
+  const messagesPage = document.querySelector('.messages-page');
+
+  let userItems = [];
+  const usersList = document.querySelector('.users-list');
+
   const msgInput = document.querySelector('.message-input');
   const msgList = document.querySelector('.messages-list');
   const sendBtn = document.querySelector('.send-btn');
   const usernameInput = document.querySelector('.username-input');
   const messages = [];
 
+  const getUsers = async () => {
+    try {
+      const { data } = await axios.get(BASE_URL + '/api/users');
+      renderUsers(data);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  getUsers(); // init app
+
+  const renderUsers = data => {
+    let users = '';
+    data.forEach(
+      user =>
+        (users += `
+          <li class="bg-dark p-2 rounded mb-2 d-flex user-item" role="button"
+            data-user='${JSON.stringify(user)}'>
+            <span class="text-info">${user.name}</span>
+          </li>`),
+    );
+    usersList.innerHTML = users;
+    userItems = document.querySelectorAll('.user-item');
+    userItems.forEach(userItem =>
+      userItem.addEventListener('click', function () {
+        selectedUser = JSON.parse(this.dataset.user);
+        selectedUserName.innerHTML = selectedUser.name;
+        usersPage.classList.add('d-none');
+      }),
+    );
+  };
+
   const getMessages = async () => {
     try {
-      const { data } = await axios.get('http://localhost:3444/api/chat');
+      const { data } = await axios.get(BASE_URL + '/api/chat');
 
       renderMessages(data);
 
@@ -17,8 +60,6 @@ const app = () => {
       console.log(error.message);
     }
   };
-
-  // getMessages();
 
   const handleSendMessage = text => {
     if (!text.trim()) {
@@ -75,7 +116,7 @@ const app = () => {
     try {
       const resp = await axios({
         method: 'post',
-        url: 'http://localhost:3444/api/users',
+        url: BASE_URL + '/api/users',
         headers: {},
         data: [
           {
