@@ -20,7 +20,7 @@ const app = () => {
 
   const getUsers = async () => {
     try {
-      const { data } = await axios.get(BASE_URL + '/api/users');
+      const { data } = await axios.get(BASE_URL + '/users');
       renderUsers(data);
     } catch (error) {
       console.log(error.message);
@@ -51,7 +51,7 @@ const app = () => {
 
   const getMessages = async () => {
     try {
-      const { data } = await axios.get(BASE_URL + '/api/chat');
+      const { data } = await axios.get(BASE_URL + '/chat');
 
       renderMessages(data);
 
@@ -116,7 +116,7 @@ const app = () => {
     try {
       const resp = await axios({
         method: 'post',
-        url: BASE_URL + '/api/users',
+        url: BASE_URL + '/users',
         headers: {},
         data: [
           {

@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
+import { PrismaService } from '../prisma.service';
 import { User, Prisma } from '@prisma/client';
 
 @Injectable()
@@ -64,8 +64,8 @@ export class UserService {
   }): Promise<User> {
     const { where, data } = params;
     return this.prisma.user.update({
-      data,
       where,
+      data: { ...data, updatedAt: new Date() },
     });
   }
 
