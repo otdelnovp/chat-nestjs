@@ -1,6 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { Chat, Prisma } from '@prisma/client';
+import { Chat, Prisma, User } from '@prisma/client';
+
+export interface ChatCreate extends Chat {
+  users: { id: string }[];
+}
+
+export interface ChatUserGet extends Pick<User, 'id' | 'name'> {
+  lastSeenAt: Date;
+}
+export interface ChatGet extends Chat {
+  users: ChatUserGet[];
+}
 
 @Injectable()
 export class ChatService {
@@ -29,10 +40,32 @@ export class ChatService {
     });
   }
 
-  async createChat(data: Prisma.ChatCreateInput): Promise<Chat> {
-    return this.prisma.chat.create({
-      data,
+  async createChat(data: ChatCreate): Promise<ChatGet> {
+    const { users, ...chat } = data;
+
+    const newChat = await this.prisma.chat.create({
+      data: chat,
     });
+
+    const newUsersOnChat: ChatUserGet[] = [];
+
+    for (const userItem of users) {
+      await this.prisma.usersOnChats.create({
+        data: {
+          userId: userItem.id,
+          chatId: newChat.id,
+          lastSeenAt: newChat.createdAt,
+        },
+      });
+
+      const currentUser = await this.prisma.user.findUnique({ where: { id: userItem.id } });
+      newUsersOnChat.push({
+        id: currentUser.id,
+        name: currentUser.name,
+        lastSeenAt: newChat.createdAt,
+      });
+    }
+    return { ...newChat, users: newUsersOnChat };
   }
 
   async updateChat(params: {

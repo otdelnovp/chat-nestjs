@@ -1,6 +1,5 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
-import { ChatService } from './chat.service';
+import { ChatCreate, ChatService } from './chat.service';
 
 @Controller('chats')
 export class ChatController {
@@ -17,7 +16,7 @@ export class ChatController {
   }
 
   @Post()
-  async setChats(@Body() dataChat: Prisma.ChatCreateInput) {
+  async createChat(@Body() dataChat: ChatCreate) {
     return await this.chatService.createChat(dataChat);
   }
 }

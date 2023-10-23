@@ -139,6 +139,58 @@ const app = () => {
     }
   };
   // setUsers();
+
+  const setChats = async () => {
+    try {
+      const resp1 = await axios({
+        method: 'post',
+        url: BASE_URL + '/chats',
+        headers: {},
+        data: {
+          name: 'Чат на двоих',
+          parentId: 'ef685bae-2a3a-a6f5-b7f8-83b3f5aa5a99',
+          authorId: '82879df6-7bfc-11e6-80d5-10604ba8b340',
+          users: [
+            { id: '82879df6-7bfc-11e6-80d5-10604ba8b340' },
+            { id: '56327ba6-799b-11e6-80d5-10604ba8b340' },
+          ],
+        },
+      });
+      const resp2 = await axios({
+        method: 'post',
+        url: BASE_URL + '/chats',
+        headers: {},
+        data: {
+          name: 'Чат на 3-их',
+          parentId: 'ef685bae-2a3a-a6f5-b7f8-83b3f5aa5a99',
+          authorId: '17d33e46-499b-11e6-80d4-10604ba8b340',
+          users: [
+            { id: '82879df6-7bfc-11e6-80d5-10604ba8b340' },
+            { id: '56327ba6-799b-11e6-80d5-10604ba8b340' },
+            { id: '17d33e46-499b-11e6-80d4-10604ba8b340' },
+          ],
+        },
+      });
+      const resp3 = await axios({
+        method: 'post',
+        url: BASE_URL + '/chats',
+        headers: {},
+        data: {
+          name: 'Еще один чат',
+          parentId: 'ef685bae-2a3a-a6f5-b7f8-83b3f5aa5a99',
+          authorId: '17d33e46-499b-11e6-80d4-10604ba8b340',
+          users: [
+            { id: '82879df6-7bfc-11e6-80d5-10604ba8b340' },
+            { id: '17d33e46-499b-11e6-80d4-10604ba8b340' },
+          ],
+        },
+      });
+      console.log(resp1, resp2, resp3);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  // setChats();
 };
 
 app();
