@@ -1,13 +1,13 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { ChatCreate, ChatService } from './chat.service';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { ChatCreate, ChatSearchQuery, ChatService } from './chat.service';
 
 @Controller('chats')
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Get()
-  async getChats() {
-    return await this.chatService.chats({});
+  async getChats(@Query() query: ChatSearchQuery) {
+    return await this.chatService.getChats(query);
   }
 
   @Get('/:id')
@@ -18,5 +18,15 @@ export class ChatController {
   @Post()
   async createChat(@Body() dataChat: ChatCreate) {
     return await this.chatService.createChat(dataChat);
+  }
+
+  @Put('/:id')
+  async addUserToChat(@Param('id') chatId: string, @Body() body: { userId: string }) {
+    return await this.chatService.addUserToChat({ chatId, userId: body.userId });
+  }
+
+  @Delete('/:id')
+  async deleteUserFromChat(@Param('id') chatId: string, @Body() body: { userId: string }) {
+    return await this.chatService.deleteUserFromChat({ chatId, userId: body.userId });
   }
 }

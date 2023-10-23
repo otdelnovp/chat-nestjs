@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "users_on_chats" ALTER COLUMN "lastSeenAt" SET DEFAULT CURRENT_TIMESTAMP;

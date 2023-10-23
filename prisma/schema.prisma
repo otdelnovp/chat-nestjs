@@ -47,7 +47,7 @@ model UsersOnChats {
   chat          Chat         @relation(fields: [chatId], references: [id])
   chatId        String
   createdAt     DateTime     @default(now())
-  lastSeenAt    DateTime
+  lastSeenAt    DateTime     @default(now())
 
   @@map("users_on_chats")
 }

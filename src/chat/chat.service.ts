@@ -1,6 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { Chat, Prisma, User } from '@prisma/client';
+import { Chat, Prisma, User, UsersOnChats } from '@prisma/client';
+
+export interface ChatSearchQuery {
+  parentId: string;
+  userId: string;
+}
 
 export interface ChatCreate extends Chat {
   users: { id: string }[];
@@ -17,55 +22,75 @@ export interface ChatGet extends Chat {
 export class ChatService {
   constructor(private prisma: PrismaService) {}
 
-  async chat(chatWhereUniqueInput: Prisma.ChatWhereUniqueInput): Promise<Chat | null> {
-    return this.prisma.chat.findUnique({
+  async chat(chatWhereUniqueInput: Prisma.ChatWhereUniqueInput): Promise<ChatGet | null> {
+    const chat = await this.prisma.chat.findUnique({
       where: chatWhereUniqueInput,
     });
-  }
 
-  async chats(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.ChatWhereUniqueInput;
-    where?: Prisma.ChatWhereInput;
-    orderBy?: Prisma.ChatOrderByWithRelationInput;
-  }): Promise<Chat[]> {
-    const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.chat.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-    });
-  }
+    const usersOnChat = await this.prisma.usersOnChats.findMany({ where: { chatId: chat.id } });
+    const getUsersToChat: ChatUserGet[] = [];
 
-  async createChat(data: ChatCreate): Promise<ChatGet> {
-    const { users, ...chat } = data;
-
-    const newChat = await this.prisma.chat.create({
-      data: chat,
-    });
-
-    const newUsersOnChat: ChatUserGet[] = [];
-
-    for (const userItem of users) {
-      await this.prisma.usersOnChats.create({
-        data: {
-          userId: userItem.id,
-          chatId: newChat.id,
-          lastSeenAt: newChat.createdAt,
-        },
+    for (const userItem of usersOnChat) {
+      const currentUser = await this.prisma.user.findUnique({
+        where: { id: userItem.id },
       });
-
-      const currentUser = await this.prisma.user.findUnique({ where: { id: userItem.id } });
-      newUsersOnChat.push({
+      getUsersToChat.push({
         id: currentUser.id,
         name: currentUser.name,
-        lastSeenAt: newChat.createdAt,
+        lastSeenAt: userItem.lastSeenAt,
       });
     }
-    return { ...newChat, users: newUsersOnChat };
+
+    return { ...chat, users: getUsersToChat };
+  }
+
+  async getChats(query: ChatSearchQuery): Promise<Chat[]> {
+    const { parentId, userId } = query;
+    if (query.parentId) {
+      return await this.chats(parentId);
+    } else if (query.userId) {
+      return await this.chatsOfUserId(userId);
+    }
+  }
+
+  async chats(parentId: string): Promise<ChatGet[]> {
+    const chats = await this.prisma.chat.findMany({
+      where: { parentId },
+    });
+    const finalChats: ChatGet[] = [];
+    for (const chatItem of chats) {
+      const finalChatItem = await this.chat({ id: chatItem.id });
+      finalChats.push(finalChatItem);
+    }
+    return finalChats;
+  }
+
+  async chatsOfUserId(userId: string): Promise<ChatGet[]> {
+    const chatsOfUser = await this.prisma.usersOnChats.findMany({
+      where: { userId },
+    });
+    const finalChats: ChatGet[] = [];
+    for (const chatItem of chatsOfUser) {
+      const finalChatItem = await this.chat({ id: chatItem.id });
+      finalChats.push(finalChatItem);
+    }
+    return finalChats;
+  }
+
+  async createChat(data: ChatCreate): Promise<any> {
+    const { users, ...chat } = data;
+
+    await this.prisma.chat.create({
+      data: {
+        ...chat,
+        UsersOnChats: {
+          create: users.map(user => ({ userId: user.id })),
+        },
+      },
+    });
+
+    return { message: 'Чат создан', code: HttpStatus.CREATED };
+    // return this.chat({ id: newChat.id });
   }
 
   async updateChat(params: {
@@ -77,6 +102,24 @@ export class ChatService {
       where,
       data: { ...data, updatedAt: new Date() },
     });
+  }
+
+  async addUserToChat(params: { chatId: string; userId: string }): Promise<UsersOnChats> {
+    const { chatId, userId } = params;
+    const currentChat = await this.prisma.chat.findUnique({
+      where: { id: chatId },
+    });
+    return await this.prisma.usersOnChats.create({
+      data: { chatId, userId, lastSeenAt: currentChat.createdAt },
+    });
+  }
+
+  async deleteUserFromChat(params: { chatId: string; userId: string }): Promise<any> {
+    const { chatId, userId } = params;
+    await this.prisma.usersOnChats.deleteMany({
+      where: { chatId, userId },
+    });
+    return { deleted: { chatId, userId } };
   }
 
   async deleteChat(where: Prisma.ChatWhereUniqueInput): Promise<Chat> {
