@@ -7,6 +7,7 @@ export class ChatController {
 
   @Get()
   async getChats(@Query() query: ChatSearchQuery) {
+    console.log(query);
     return await this.chatService.getChats(query);
   }
 
@@ -20,13 +21,13 @@ export class ChatController {
     return await this.chatService.createChat(dataChat);
   }
 
-  @Put('/:id')
-  async addUserToChat(@Param('id') chatId: string, @Body() body: { userId: string }) {
-    return await this.chatService.addUserToChat({ chatId, userId: body.userId });
+  @Put('/user-add')
+  async addUserToChat(@Body() body: { chatId: string; userId: string }) {
+    return await this.chatService.addUserToChat(body);
   }
 
-  @Delete('/:id')
-  async deleteUserFromChat(@Param('id') chatId: string, @Body() body: { userId: string }) {
-    return await this.chatService.deleteUserFromChat({ chatId, userId: body.userId });
+  @Delete('/user-delete')
+  async deleteUserFromChat(@Body() body: { chatId: string; userId: string }) {
+    return await this.chatService.deleteUserFromChat(body);
   }
 }

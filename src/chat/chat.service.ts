@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Chat, Prisma, User, UsersOnChats } from '@prisma/client';
 
 export interface ChatSearchQuery {
-  parentId: string;
+  parentId?: string;
   userId: string;
 }
 
@@ -55,17 +55,19 @@ export class ChatService {
 
   async getChats(query: ChatSearchQuery): Promise<Chat[]> {
     const { parentId, userId } = query;
-    let chats: Chat[] | UsersOnChats[] = [];
+    let chatIds: string[] = [];
     if (query.parentId) {
-      chats = await this.prisma.chat.findMany({
+      const chats = await this.prisma.chat.findMany({
         where: { parentId },
       });
+      chatIds = chats.map(chatItem => chatItem.id);
     } else if (query.userId) {
-      chats = await this.prisma.usersOnChats.findMany({
+      const chats = await this.prisma.usersOnChats.findMany({
         where: { userId },
       });
+      chatIds = chats.map(chatItem => chatItem.chatId);
     }
-    return this.chats(chats.map(chatItem => chatItem.id));
+    return this.chats(chatIds);
   }
 
   async createChat(data: ChatCreate): Promise<any> {
@@ -96,12 +98,19 @@ export class ChatService {
 
   async addUserToChat(params: { chatId: string; userId: string }): Promise<UsersOnChats> {
     const { chatId, userId } = params;
-    const currentChat = await this.prisma.chat.findUnique({
-      where: { id: chatId },
+    const checkExistUser = await this.prisma.usersOnChats.findFirst({
+      where: { chatId, userId },
     });
-    return await this.prisma.usersOnChats.create({
-      data: { chatId, userId, lastSeenAt: currentChat.createdAt },
-    });
+    if (!checkExistUser) {
+      const currentChat = await this.prisma.chat.findUnique({
+        where: { id: chatId },
+      });
+      return await this.prisma.usersOnChats.create({
+        data: { chatId, userId, lastSeenAt: currentChat.createdAt },
+      });
+    } else {
+      throw new HttpException('Пользователь уже есть в чате', HttpStatus.CONFLICT);
+    }
   }
 
   async deleteUserFromChat(params: { chatId: string; userId: string }): Promise<any> {
@@ -109,7 +118,10 @@ export class ChatService {
     await this.prisma.usersOnChats.deleteMany({
       where: { chatId, userId },
     });
-    return { deleted: { chatId, userId } };
+    return {
+      message: 'Пользователь успешно удален',
+      deleted: { chatId, userId },
+    };
   }
 
   async deleteChat(where: Prisma.ChatWhereUniqueInput): Promise<Chat> {
