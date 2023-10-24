@@ -15,6 +15,7 @@ CREATE TABLE "chats" (
     "id" TEXT NOT NULL,
     "name" VARCHAR(300) NOT NULL,
     "authorId" TEXT NOT NULL,
+    "parentId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -27,7 +28,7 @@ CREATE TABLE "users_on_chats" (
     "userId" TEXT NOT NULL,
     "chatId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "lastSeenAt" TIMESTAMP(3) NOT NULL,
+    "lastSeenAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "users_on_chats_pkey" PRIMARY KEY ("id")
 );
