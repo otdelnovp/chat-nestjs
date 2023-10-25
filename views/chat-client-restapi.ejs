@@ -12,11 +12,10 @@
       .message {
         position: relative;
       }
-
       .date {
         position: absolute;
-        top: 5px;
-        right: 5px;
+        top: 7px;
+        right: 10px;
         font-size: 14px;
       }
     </style>
@@ -41,21 +40,21 @@
       <section class="chats-page d-none">
         <div class="container-fluid">
           <div class="mb-3 mt-3">
-            <ul style="list-style: none" class="chat-list p-0"></ul>
+            <ul style="list-style: none; padding: 0; margin: 0" class="chat-list p-0"></ul>
           </div>
         </div>
       </section>
       <section class="messages-page d-none">
         <div class="container-fluid">
           <div class="mb-3 mt-3">
-            <ul style="list-style: none" class="message-list"></ul>
+            <ul style="list-style: none; padding: 0; margin: 0" class="message-list"></ul>
           </div>
           <div class="row">
             <div class="mt-4 col-12 col-md-9">
               <input class="form-control message-input" placeholder="Сообщение..." />
             </div>
             <div class="mt-4 mb-4 col-12 col-md-3">
-              <button class="btn btn-primary send-btn btn-block">Отправить</button>
+              <button class="btn btn-primary send-message-btn btn-block">Отправить</button>
             </div>
           </div>
         </div>

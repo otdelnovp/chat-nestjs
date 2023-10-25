@@ -1,20 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { Message, Prisma, User } from '@prisma/client';
+import { Message, Prisma } from '@prisma/client';
 
 export interface MessageSearchQuery {
   dateFrom?: Date;
 }
 
 export interface MessageCreate extends Message {
-  users: { id: string }[];
-}
-
-export interface MessageUserGet extends Pick<User, 'id' | 'name'> {
-  lastSeenAt: Date;
-}
-export interface MessageGet extends Message {
-  users: MessageUserGet[];
+  chatId: string;
+  authorId: string;
+  content: string;
 }
 
 export interface MessageSeen {
@@ -30,7 +25,8 @@ export class MessageService {
   async messages(chatId: string, query: MessageSearchQuery): Promise<Message[]> {
     const { dateFrom } = query;
     return await this.prisma.message.findMany({
-      where: { chatId, createdAt: dateFrom },
+      where: { chatId, createdAt: { gte: dateFrom } },
+      include: { author: { select: { id: true, name: true } } },
     });
   }
 

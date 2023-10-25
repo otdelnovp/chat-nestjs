@@ -14,17 +14,16 @@ const app = () => {
   const chatsPage = document.querySelector('.chats-page');
 
   const messagesPage = document.querySelector('.messages-page');
-  const msgInput = document.querySelector('.message-input');
-  const msgList = document.querySelector('.message-list');
-  const sendBtn = document.querySelector('.send-btn');
-  const usernameInput = document.querySelector('.username-input');
-  const messages = [];
+  const messageInput = document.querySelector('.message-input');
+  const messageList = document.querySelector('.message-list');
+  const sendMessageBtn = document.querySelector('.send-message-btn');
 
   // USERS
 
   const getUsers = async () => {
     try {
       const { data } = await axios.get(BASE_URL + '/users');
+      console.log('users', data);
       renderUsers(data);
     } catch (error) {
       console.log(error.message);
@@ -63,7 +62,7 @@ const app = () => {
         url: BASE_URL + '/chats',
         params: { userId: selectedUser.id },
       });
-      console.log(data);
+      console.log('chats', data);
       renderChats(data);
     } catch (error) {
       console.log(error.message);
@@ -102,28 +101,33 @@ const app = () => {
         url: BASE_URL + '/messages/' + selectedChat.id,
         params: { dateFrom: selectedChat.createdAt },
       });
-      console.log(data);
+      console.log('messages', data);
       renderMessages(data);
-      data.forEach(item => messages.push(item));
     } catch (error) {
       console.log(error.message);
     }
   };
 
   const handleSendMessage = text => {
-    if (!text.trim()) {
-      return;
-    }
-    sendMessage({
-      username: usernameInput.value || 'Anonymous',
-      text,
-      createdAt: new Date(),
+    if (!text.trim()) return;
+    axios({
+      method: 'post',
+      url: BASE_URL + '/messages',
+      data: {
+        chatId: selectedChat.id,
+        authorId: selectedUser.id,
+        content: text,
+      },
     });
-    msgInput.value = '';
+    messageInput.value = '';
+    getMessages();
   };
 
-  msgInput.addEventListener('keydown', e => e.keyCode === 13 && handleSendMessage(e.target.value));
-  sendBtn.addEventListener('click', () => handleSendMessage(msgInput.value));
+  messageInput.addEventListener(
+    'keydown',
+    e => e.keyCode === 13 && handleSendMessage(e.target.value),
+  );
+  sendMessageBtn.addEventListener('click', () => handleSendMessage(messageInput.value));
 
   const renderMessages = data => {
     let messagesHtml = '';
@@ -132,21 +136,15 @@ const app = () => {
         (messagesHtml += `
         <li class="bg-dark p-2 rounded mb-2 d-flex justify-content-between message">
             <div class="mr-2">
-                <span class="text-info">${message.username}</span>
-                <p class="text-light">${message.text}</p>
+                <span class="text-info">${message.author.name}</span>
+                <div class="text-light">${message.content}</div>
             </div>
             <span class="text-muted text-right date">
-                ${new Date(message.createdAt).toLocaleString('ru', {
-                  year: 'numeric',
-                  month: 'numeric',
-                  day: 'numeric',
-                  hour: 'numeric',
-                  minute: 'numeric',
-                })}
+                ${new Date(message.createdAt).toLocaleString('ru')}
             </span>
         </li>`),
     );
-    msgList.innerHTML = messagesHtml;
+    messageList.innerHTML = messagesHtml;
     messagesPage.classList.remove('d-none');
   };
 
