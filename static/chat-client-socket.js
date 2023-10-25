@@ -5,19 +5,19 @@ const app = () => {
 
   let selectedUser = null;
   let userItems = [];
-  const usersList = document.querySelector('.users-list');
+  const userList = document.querySelector('.user-list');
   const selectedUserName = document.querySelector('.selected-user');
   const usersPage = document.querySelector('.users-page');
 
   let selectedChat = null;
   let chatItems = [];
-  const chatsList = document.querySelector('.chats-list');
+  const chatList = document.querySelector('.chat-list');
   const selectedChatName = document.querySelector('.selected-chat');
   const chatsPage = document.querySelector('.chats-page');
 
   const messagesPage = document.querySelector('.messages-page');
   const msgInput = document.querySelector('.message-input');
-  const msgList = document.querySelector('.messages-list');
+  const msgList = document.querySelector('.message-list');
   const sendBtn = document.querySelector('.send-btn');
   const usernameInput = document.querySelector('.username-input');
   const messages = [];
@@ -44,7 +44,7 @@ const app = () => {
             <span class="text-info">${user.name}</span>
           </li>`),
     );
-    usersList.innerHTML = usersHtml;
+    userList.innerHTML = usersHtml;
     userItems = document.querySelectorAll('.user-item');
     userItems.forEach(userItem =>
       userItem.addEventListener('click', function () {
@@ -82,7 +82,7 @@ const app = () => {
             <span class="text-info">${chat.name}</span>
           </li>`),
     );
-    chatsList.innerHTML = chatsHtml;
+    chatList.innerHTML = chatsHtml;
     chatsPage.classList.remove('d-none');
     chatItems = document.querySelectorAll('.chat-item');
     chatItems.forEach(chatItem =>
@@ -163,24 +163,12 @@ const app = () => {
   // FAKE DATA
 
   const setUsers = async () => {
+    const { data } = await axios.get('/data-example/users.json');
     try {
       const resp = await axios({
         method: 'post',
         url: BASE_URL + '/users',
-        data: [
-          {
-            id: '82879df6-7bfc-11e6-80d5-10604ba8b340',
-            name: 'Лефтеров Максим Андреевич',
-          },
-          {
-            id: '56327ba6-799b-11e6-80d5-10604ba8b340',
-            name: 'Хайков Михаил Яковлевич',
-          },
-          {
-            id: '17d33e46-499b-11e6-80d4-10604ba8b340',
-            name: 'Клюева Ольга Владимировна',
-          },
-        ],
+        data,
       });
       console.log(resp);
     } catch (error) {
@@ -190,46 +178,22 @@ const app = () => {
   // setUsers();
 
   const setChats = async () => {
+    const { data } = await axios.get('/data-example/chats.json');
     try {
       const resp1 = await axios({
         method: 'post',
         url: BASE_URL + '/chats',
-        data: {
-          name: 'Чат на двоих',
-          parentId: 'ef685bae-2a3a-a6f5-b7f8-83b3f5aa5a99',
-          authorId: '82879df6-7bfc-11e6-80d5-10604ba8b340',
-          users: [
-            { id: '82879df6-7bfc-11e6-80d5-10604ba8b340' },
-            { id: '56327ba6-799b-11e6-80d5-10604ba8b340' },
-          ],
-        },
+        data: data[0],
       });
       const resp2 = await axios({
         method: 'post',
         url: BASE_URL + '/chats',
-        data: {
-          name: 'Чат на 3-их',
-          parentId: 'ef685bae-2a3a-a6f5-b7f8-83b3f5aa5a99',
-          authorId: '17d33e46-499b-11e6-80d4-10604ba8b340',
-          users: [
-            { id: '82879df6-7bfc-11e6-80d5-10604ba8b340' },
-            { id: '56327ba6-799b-11e6-80d5-10604ba8b340' },
-            { id: '17d33e46-499b-11e6-80d4-10604ba8b340' },
-          ],
-        },
+        data: data[1],
       });
       const resp3 = await axios({
         method: 'post',
         url: BASE_URL + '/chats',
-        data: {
-          name: 'Еще один чат',
-          parentId: 'ef685bae-2a3a-a6f5-b7f8-83b3f5aa5a99',
-          authorId: '17d33e46-499b-11e6-80d4-10604ba8b340',
-          users: [
-            { id: '82879df6-7bfc-11e6-80d5-10604ba8b340' },
-            { id: '17d33e46-499b-11e6-80d4-10604ba8b340' },
-          ],
-        },
+        data: data[2],
       });
       console.log(resp1, resp2, resp3);
     } catch (error) {

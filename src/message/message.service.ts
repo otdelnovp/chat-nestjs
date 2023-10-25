@@ -28,8 +28,9 @@ export class MessageService {
   constructor(private prisma: PrismaService) {}
 
   async messages(chatId: string, query: MessageSearchQuery): Promise<Message[]> {
+    const { dateFrom } = query;
     return await this.prisma.message.findMany({
-      where: { id: chatId, ...query },
+      where: { chatId, createdAt: dateFrom },
     });
   }
 

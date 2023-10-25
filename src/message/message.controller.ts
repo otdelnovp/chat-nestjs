@@ -5,7 +5,7 @@ import { MessageCreate, MessageSearchQuery, MessageSeen, MessageService } from '
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
-  @Get()
+  @Get(':id')
   async getMessages(@Param('id') chatId: string, @Query() query: MessageSearchQuery) {
     return await this.messageService.messages(chatId, query);
   }
@@ -15,7 +15,7 @@ export class MessageController {
     return await this.messageService.createMessage(dataMessage);
   }
 
-  @Put('/last-seen')
+  @Put('last-seen')
   async seenMessage(@Body() body: MessageSeen) {
     return await this.messageService.seenMessage(body);
   }

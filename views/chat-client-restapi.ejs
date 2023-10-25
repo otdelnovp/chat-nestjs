@@ -20,12 +20,13 @@
         font-size: 14px;
       }
     </style>
-    <title>Chat example</title>
+    <title>Chat nestjs example</title>
   </head>
   <body>
     <header>
       <nav class="navbar navbar-dark bg-dark">
         <a class="navbar-brand">Chat example</a>
+        <span class="selected-chat"></span>
         <span class="selected-user"></span>
       </nav>
     </header>
@@ -33,30 +34,27 @@
       <section class="users-page">
         <div class="container-fluid">
           <div class="mb-3 mt-3">
-            <ul style="list-style: none" class="users-list p-0"></ul>
+            <ul style="list-style: none" class="user-list p-0"></ul>
           </div>
         </div>
       </section>
       <section class="chats-page d-none">
         <div class="container-fluid">
           <div class="mb-3 mt-3">
-            <ul style="list-style: none" class="chats-list p-0"></ul>
+            <ul style="list-style: none" class="chat-list p-0"></ul>
           </div>
         </div>
       </section>
       <section class="messages-page d-none">
         <div class="container-fluid">
           <div class="mb-3 mt-3">
-            <ul style="list-style: none" class="messages-list"></ul>
+            <ul style="list-style: none" class="message-list"></ul>
           </div>
           <div class="row">
-            <div class="mt-4 col-12 col-md-2">
-              <input class="form-control username-input" placeholder="Ваше имя" />
-            </div>
-            <div class="mt-4 col-12 col-md-8">
+            <div class="mt-4 col-12 col-md-9">
               <input class="form-control message-input" placeholder="Сообщение..." />
             </div>
-            <div class="mt-4 mb-4 col-12 col-md-2">
+            <div class="mt-4 mb-4 col-12 col-md-3">
               <button class="btn btn-primary send-btn btn-block">Отправить</button>
             </div>
           </div>
@@ -65,7 +63,6 @@
     </main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
-    <script src="/client.js"></script>
+    <script src="/chat-client-restapi.js"></script>
   </body>
 </html>
