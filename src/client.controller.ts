@@ -1,9 +1,10 @@
 import { Controller, Get, Render } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Пример клиентов')
 @Controller('chat-client')
 export class ClientController {
+  @ApiOperation({ summary: 'Пример клиентского приложения по работе с чатами' })
   @Get('restapi')
   @Render('chat-client-restapi')
   getRESTapiClient(): string {

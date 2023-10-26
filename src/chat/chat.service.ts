@@ -3,8 +3,8 @@ import { PrismaService } from '../prisma.service';
 import { Chat, Prisma, User, UsersOnChats } from '@prisma/client';
 
 export interface ChatSearchQuery {
-  parentId?: string;
   userId: string;
+  parentId?: string;
 }
 
 export interface ChatCreate extends Chat {
@@ -63,16 +63,16 @@ export class ChatService {
   async getChats(query: ChatSearchQuery): Promise<Chat[]> {
     const { parentId, userId } = query;
     let chatIds: string[] = [];
-    if (query.parentId) {
-      const chats = await this.prisma.chat.findMany({
-        where: { parentId },
-      });
-      chatIds = chats.map(chatItem => chatItem.id);
-    } else if (query.userId) {
+    if (query.userId) {
       const chats = await this.prisma.usersOnChats.findMany({
         where: { userId },
       });
       chatIds = chats.map(chatItem => chatItem.chatId);
+    } else if (query.parentId) {
+      const chats = await this.prisma.chat.findMany({
+        where: { parentId },
+      });
+      chatIds = chats.map(chatItem => chatItem.id);
     }
     return this.chats(chatIds, userId);
   }
