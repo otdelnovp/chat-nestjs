@@ -25,7 +25,7 @@ export class UserController {
     return await this.userService.user({ id });
   }
 
-  @ApiOperation({ summary: 'Добавление пользователя' })
+  @ApiOperation({ summary: 'Добавление пользователей (импорт из внешней системы)' })
   @Post()
   async setUsers(@Body() dataUsers: User[]) {
     return await this.userService.createUsers(dataUsers);

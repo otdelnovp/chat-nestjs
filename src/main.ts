@@ -7,6 +7,7 @@ import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableShutdownHooks();
+  app.setGlobalPrefix('chat-nestjs');
 
   const siteTitle = 'Chat NestJS';
   const config = new DocumentBuilder()
@@ -18,6 +19,7 @@ async function bootstrap() {
     .build();
   const customOptions: SwaggerCustomOptions = {
     customSiteTitle: siteTitle,
+    customCss: '#swagger-ui .topbar{display:none}',
     swaggerOptions: {
       supportedSubmitMethods: [],
       defaultModelExpandDepth: 10,

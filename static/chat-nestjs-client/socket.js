@@ -1,6 +1,7 @@
-const BASE_URL = 'http://localhost:3444';
+const BASE_URL = 'http://localhost:3444/chat-nestjs';
 
 const app = () => {
+  const socket = io(BASE_URL);
   let selectedUser = null;
   let userItems = [];
   const userList = document.querySelector('.user-list');
@@ -17,6 +18,7 @@ const app = () => {
   const messageInput = document.querySelector('.message-input');
   const messageList = document.querySelector('.message-list');
   const sendMessageBtn = document.querySelector('.send-message-btn');
+  const messages = [];
 
   // USERS
 
@@ -105,6 +107,7 @@ const app = () => {
       });
       console.log('messages', data);
       renderMessages(data);
+      data.forEach(item => messages.push(item));
     } catch (error) {
       console.log(error.message);
     }
@@ -121,10 +124,17 @@ const app = () => {
         content: text,
       },
     });
+    sendMessage({
+      chatId: selectedChat.id,
+      authorId: selectedUser.id,
+      content: text,
+    });
     messageInput.value = '';
     getMessages();
+    msgInput.value = '';
   };
 
+  const sendMessage = message => socket.emit('sendMessage', message);
   messageInput.addEventListener(
     'keydown',
     e => e.keyCode === 13 && handleSendMessage(e.target.value),
@@ -150,10 +160,15 @@ const app = () => {
     messagesPage.classList.remove('d-none');
   };
 
+  socket.on('recMessage', message => {
+    messages.push(message);
+    renderMessages(messages);
+  });
+
   // FAKE DATA
 
   const setUsers = async () => {
-    const { data } = await axios.get('/data-example/users.json');
+    const { data } = await axios.get(BASE_URL + '/data-example/users.json');
     try {
       const resp = await axios({
         method: 'post',
@@ -168,7 +183,7 @@ const app = () => {
   // setUsers();
 
   const setChats = async () => {
-    const { data } = await axios.get('/data-example/chats.json');
+    const { data } = await axios.get(BASE_URL + '/data-example/chats.json');
     try {
       const resp1 = await axios({
         method: 'post',

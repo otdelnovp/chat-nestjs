@@ -12,11 +12,10 @@
       .message {
         position: relative;
       }
-
       .date {
         position: absolute;
-        top: 5px;
-        right: 5px;
+        top: 7px;
+        right: 10px;
         font-size: 14px;
       }
     </style>
@@ -41,14 +40,14 @@
       <section class="chats-page d-none">
         <div class="container-fluid">
           <div class="mb-3 mt-3">
-            <ul style="list-style: none" class="chat-list p-0"></ul>
+            <ul style="list-style: none; padding: 0; margin: 0" class="chat-list p-0"></ul>
           </div>
         </div>
       </section>
       <section class="messages-page d-none">
         <div class="container-fluid">
           <div class="mb-3 mt-3">
-            <ul style="list-style: none" class="message-list"></ul>
+            <ul style="list-style: none; padding: 0; margin: 0" class="message-list"></ul>
           </div>
           <div class="row">
             <div class="mt-4 col-12 col-md-9">
@@ -63,7 +62,6 @@
     </main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
-    <script src="/chat-client-socket.js"></script>
+    <script src="/chat-nestjs-client/restapi.js"></script>
   </body>
 </html>
