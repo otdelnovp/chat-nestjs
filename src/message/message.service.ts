@@ -31,6 +31,13 @@ export class MessageService {
   }
 
   async createMessage(data: MessageCreate): Promise<any> {
+    const { chatId, authorId } = data;
+    const updatedAt = new Date();
+    await this.seenMessage({ chatId, userId: authorId, lastSeenAt: updatedAt });
+    await this.prisma.chat.update({
+      where: { id: chatId },
+      data: { updatedAt },
+    });
     return await this.prisma.message.create({
       data,
     });
@@ -41,7 +48,7 @@ export class MessageService {
     data: Prisma.MessageUpdateInput;
   }): Promise<Message> {
     const { where, data } = params;
-    return this.prisma.message.update({
+    return await this.prisma.message.update({
       where,
       data: { ...data, updatedAt: new Date() },
     });
@@ -49,7 +56,7 @@ export class MessageService {
 
   async seenMessage(params: MessageSeen): Promise<any> {
     const { chatId, userId, lastSeenAt } = params;
-    this.prisma.usersOnChats.updateMany({
+    await this.prisma.usersOnChats.updateMany({
       where: { chatId, userId },
       data: { lastSeenAt },
     });
@@ -59,7 +66,7 @@ export class MessageService {
   }
 
   async deleteMessage(where: Prisma.MessageWhereUniqueInput): Promise<Message> {
-    return this.prisma.message.delete({
+    return await this.prisma.message.delete({
       where,
     });
   }

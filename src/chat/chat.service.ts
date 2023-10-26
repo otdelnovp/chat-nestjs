@@ -16,13 +16,17 @@ export interface ChatUserGet extends Pick<User, 'id' | 'name'> {
 }
 export interface ChatGet extends Chat {
   users: ChatUserGet[];
+  unread: boolean;
 }
 
 @Injectable()
 export class ChatService {
   constructor(private prisma: PrismaService) {}
 
-  async chat(chatWhereUniqueInput: Prisma.ChatWhereUniqueInput): Promise<ChatGet | null> {
+  async chat(
+    chatWhereUniqueInput: Prisma.ChatWhereUniqueInput,
+    userId?: string,
+  ): Promise<ChatGet | null> {
     const chat = await this.prisma.chat.findUnique({
       where: chatWhereUniqueInput,
     });
@@ -41,13 +45,16 @@ export class ChatService {
       });
     }
 
-    return { ...chat, users: getUsersToChat };
+    const activeUser = !!userId && getUsersToChat.find(userItem => userItem.id === userId);
+    const unread = !!activeUser && new Date(chat.updatedAt) > new Date(activeUser.lastSeenAt);
+
+    return { ...chat, users: getUsersToChat, unread };
   }
 
-  async chats(chatIds: string[]): Promise<ChatGet[]> {
+  async chats(chatIds: string[], userId?: string): Promise<ChatGet[]> {
     const finalChats: ChatGet[] = [];
     for (const id of chatIds) {
-      const finalChatItem = await this.chat({ id });
+      const finalChatItem = await this.chat({ id }, userId);
       finalChats.push(finalChatItem);
     }
     return finalChats;
@@ -67,7 +74,7 @@ export class ChatService {
       });
       chatIds = chats.map(chatItem => chatItem.chatId);
     }
-    return this.chats(chatIds);
+    return this.chats(chatIds, userId);
   }
 
   async createChat(data: ChatCreate): Promise<any> {

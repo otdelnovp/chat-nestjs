@@ -76,7 +76,9 @@ const app = () => {
         (chatsHtml += `
           <li class="bg-dark p-2 rounded mb-2 d-flex chat-item" role="button"
             data-chat='${JSON.stringify(chat)}'>
-            <span class="text-info">${chat.name}</span>
+            <span class="text-info">${chat.unread ? '<big style="color: red">&bull;</big> ' : ''}${
+              chat.name
+            }</span>
           </li>`),
     );
     chatList.innerHTML = chatsHtml;
