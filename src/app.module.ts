@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { UserController } from './user/user.controller';
 import { ChatController } from './chat/chat.controller';
 import { MessageController } from './message/message.controller';
+import { ClientController } from './client.controller';
 
 import { AppService } from './app.service';
 import { AppGateway } from './app.gateway';
@@ -15,7 +16,7 @@ import { MessageService } from './message/message.service';
 
 @Module({
   imports: [],
-  controllers: [AppController, UserController, ChatController, MessageController],
+  controllers: [AppController, UserController, ChatController, MessageController, ClientController],
   providers: [AppService, AppGateway, PrismaService, UserService, ChatService, MessageService],
 })
 export class AppModule {}

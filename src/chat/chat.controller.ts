@@ -1,6 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ChatCreate, ChatSearchQuery, ChatService } from './chat.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Чаты (chats)')
 @Controller('chats')
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
