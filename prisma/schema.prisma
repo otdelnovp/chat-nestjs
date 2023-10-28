@@ -14,7 +14,7 @@ model User {
   id            String       @id @default(uuid())
   name          String       @unique @db.VarChar(50)
   email         String?
-  phone         String?
+  phone         Int?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @default(now())
 
@@ -30,7 +30,7 @@ model Chat {
   name          String       @db.VarChar(300)
   author        User         @relation(fields: [authorId], references: [id])
   authorId      String
-  parentId      String
+  parentId      String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @default(now())
 

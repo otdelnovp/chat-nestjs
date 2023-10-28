@@ -1,7 +1,10 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { Body, Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+
+import { GetUserDto } from './dto/get-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserResponseDto } from './dto/create-user-response.dto';
 
 @ApiTags('Пользователи (users)')
 @Controller('users')
@@ -9,12 +12,16 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @ApiOperation({ summary: 'Получить список пользователей' })
+  @ApiResponse({ status: HttpStatus.OK, type: GetUserDto, isArray: true })
   @Get()
   async getUsers() {
     return await this.userService.users({});
   }
 
+  ////
+
   @ApiOperation({ summary: 'Получить данные одного пользователя' })
+  @ApiResponse({ status: HttpStatus.OK, type: GetUserDto })
   @ApiParam({
     name: 'id',
     description: 'UUID пользователя',
@@ -25,9 +32,13 @@ export class UserController {
     return await this.userService.user({ id });
   }
 
+  ////
+
   @ApiOperation({ summary: 'Добавление пользователей (импорт из внешней системы)' })
+  @ApiBody({ type: CreateUserDto, isArray: true })
+  @ApiResponse({ status: HttpStatus.CREATED, type: CreateUserResponseDto })
   @Post()
-  async setUsers(@Body() dataUsers: User[]) {
-    return await this.userService.createUsers(dataUsers);
+  async setUsers(@Body() dataUsersDto: CreateUserDto[]) {
+    return await this.userService.createUsers(dataUsersDto);
   }
 }

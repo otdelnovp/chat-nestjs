@@ -2,14 +2,22 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { User, Prisma } from '@prisma/client';
 
+import { DtoTransformService } from 'src/dto-transform/dto-transform.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { GetUserDto } from './dto/get-user.dto';
+
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private dtoTransformService: DtoTransformService,
+  ) {}
 
   async user(userWhereUniqueInput: Prisma.UserWhereUniqueInput): Promise<User | null> {
-    return this.prisma.user.findUnique({
+    const foundUser = await this.prisma.user.findUnique({
       where: userWhereUniqueInput,
     });
+    return this.dtoTransformService.toClass(foundUser, GetUserDto);
   }
 
   async users(params: {
@@ -20,18 +28,25 @@ export class UserService {
     orderBy?: Prisma.UserOrderByWithRelationInput;
   }): Promise<User[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.user.findMany({
+    const foundUsers = await this.prisma.user.findMany({
       skip,
       take,
       cursor,
       where,
       orderBy,
     });
+    return this.dtoTransformService.toClassArray(foundUsers, GetUserDto);
   }
 
-  async createUsers(dataUsers: Prisma.UserCreateInput[]): Promise<any> {
+  async createUsers(dataUsersDto: CreateUserDto[]): Promise<any> {
     let created = 0;
     let updated = 0;
+
+    const dataUsers: Prisma.UserCreateInput[] = this.dtoTransformService.toClassArray(
+      dataUsersDto,
+      CreateUserDto,
+    );
+
     try {
       for (const userItem of dataUsers) {
         const isExistUser = await this.prisma.user.findFirst({ where: { id: userItem.id } });

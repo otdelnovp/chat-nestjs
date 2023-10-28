@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 
+import { DtoTransformModule } from './dto-transform/dto-transform.module';
+
 import { AppController } from './app.controller';
 import { UserController } from './user/user.controller';
 import { ChatController } from './chat/chat.controller';
@@ -15,7 +17,7 @@ import { ChatService } from './chat/chat.service';
 import { MessageService } from './message/message.service';
 
 @Module({
-  imports: [],
+  imports: [DtoTransformModule],
   controllers: [AppController, UserController, ChatController, MessageController, ClientController],
   providers: [AppService, AppGateway, PrismaService, UserService, ChatService, MessageService],
 })
