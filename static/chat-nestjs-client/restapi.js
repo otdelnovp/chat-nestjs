@@ -6,12 +6,14 @@ const app = () => {
   const userList = document.querySelector('.user-list');
   const selectedUserName = document.querySelector('.selected-user');
   const usersPage = document.querySelector('.users-page');
+  const usersCreateTest = document.querySelector('.users-create-test');
 
   let selectedChat = null;
   let chatItems = [];
   const chatList = document.querySelector('.chat-list');
   const selectedChatName = document.querySelector('.selected-chat');
   const chatsPage = document.querySelector('.chats-page');
+  const chatsCreateTest = document.querySelector('.chats-create-test');
 
   const messagesPage = document.querySelector('.messages-page');
   const messageInput = document.querySelector('.message-input');
@@ -25,6 +27,7 @@ const app = () => {
       const { data } = await axios.get(BASE_URL + '/users');
       console.log('users', data);
       renderUsers(data);
+      if (!data.length) usersCreateTest.classList.remove('d-none');
     } catch (error) {
       console.log(error.message);
     }
@@ -38,7 +41,7 @@ const app = () => {
         (usersHtml += `
           <li class="bg-dark p-2 rounded mb-2 d-flex user-item" role="button"
             data-user='${JSON.stringify(user)}'>
-            <span class="text-info">${user.name}</span>
+            <span class="text-info">${user.Name}</span>
           </li>`),
     );
     userList.innerHTML = usersHtml;
@@ -46,7 +49,7 @@ const app = () => {
     userItems.forEach(userItem =>
       userItem.addEventListener('click', function () {
         selectedUser = JSON.parse(this.dataset.user);
-        selectedUserName.innerHTML = selectedUser.name;
+        selectedUserName.innerHTML = selectedUser.Name;
         usersPage.classList.add('d-none');
         getChats();
       }),
@@ -60,10 +63,11 @@ const app = () => {
       const { data } = await axios({
         method: 'get',
         url: BASE_URL + '/chats',
-        params: { userId: selectedUser.id },
+        params: { userId: selectedUser.Id },
       });
       console.log('chats', data);
       renderChats(data);
+      if (!data.length) chatsCreateTest.classList.remove('d-none');
     } catch (error) {
       console.log(error.message);
     }
@@ -76,8 +80,8 @@ const app = () => {
         (chatsHtml += `
           <li class="bg-dark p-2 rounded mb-2 d-flex chat-item" role="button"
             data-chat='${JSON.stringify(chat)}'>
-            <span class="text-info">${chat.unread ? '<big style="color: red">&bull;</big> ' : ''}${
-              chat.name
+            <span class="text-info">${chat.Unread ? '<big style="color: red">&bull;</big> ' : ''}${
+              chat.Name
             }</span>
           </li>`),
     );
@@ -87,7 +91,7 @@ const app = () => {
     chatItems.forEach(chatItem =>
       chatItem.addEventListener('click', function () {
         selectedChat = JSON.parse(this.dataset.chat);
-        selectedChatName.innerHTML = selectedChat.name;
+        selectedChatName.innerHTML = selectedChat.Name;
         chatsPage.classList.add('d-none');
         getMessages();
       }),
@@ -100,8 +104,8 @@ const app = () => {
     try {
       const { data } = await axios({
         method: 'get',
-        url: BASE_URL + '/messages/' + selectedChat.id,
-        params: { dateFrom: selectedChat.createdAt },
+        url: BASE_URL + '/messages/' + selectedChat.Id,
+        params: { dateFrom: selectedChat.CreatedAt },
       });
       console.log('messages', data);
       renderMessages(data);
@@ -110,15 +114,15 @@ const app = () => {
     }
   };
 
-  const handleSendMessage = text => {
+  const handleSendMessage = async text => {
     if (!text.trim()) return;
-    axios({
+    await axios({
       method: 'post',
       url: BASE_URL + '/messages',
       data: {
-        chatId: selectedChat.id,
-        authorId: selectedUser.id,
-        content: text,
+        ChatId: selectedChat.Id,
+        AuthorId: selectedUser.Id,
+        Content: text,
       },
     });
     messageInput.value = '';
@@ -138,11 +142,11 @@ const app = () => {
         (messagesHtml += `
         <li class="bg-dark p-2 rounded mb-2 d-flex justify-content-between message">
             <div class="mr-2">
-                <span class="text-info">${message.author.name}</span>
-                <div class="text-light">${message.content}</div>
+                <span class="text-info">${message.AuthorName}</span>
+                <div class="text-light">${message.Content}</div>
             </div>
             <span class="text-muted text-right date">
-                ${new Date(message.createdAt).toLocaleString('ru')}
+                ${new Date(message.CreatedAt).toLocaleString('ru')}
             </span>
         </li>`),
     );
@@ -152,8 +156,9 @@ const app = () => {
 
   // FAKE DATA
 
+  usersCreateTest.addEventListener('click', () => setUsers());
   const setUsers = async () => {
-    const { data } = await axios.get(BASE_URL + '/data-example/users.json');
+    const { data } = await axios.get('/chat-nestjs-client/data-example/users.json');
     try {
       const resp = await axios({
         method: 'post',
@@ -161,14 +166,16 @@ const app = () => {
         data,
       });
       console.log(resp);
+      usersCreateTest.classList.add('d-none');
+      setTimeout(getUsers, 1000);
     } catch (error) {
       console.log(error.message);
     }
   };
-  // setUsers();
 
+  chatsCreateTest.addEventListener('click', () => setChats());
   const setChats = async () => {
-    const { data } = await axios.get(BASE_URL + '/data-example/chats.json');
+    const { data } = await axios.get('/chat-nestjs-client/data-example/chats.json');
     try {
       const resp1 = await axios({
         method: 'post',
@@ -186,11 +193,12 @@ const app = () => {
         data: data[2],
       });
       console.log(resp1, resp2, resp3);
+      chatsCreateTest.classList.add('d-none');
+      setTimeout(getChats, 1000);
     } catch (error) {
       console.log(error.message);
     }
   };
-  // setChats();
 };
 
 app();

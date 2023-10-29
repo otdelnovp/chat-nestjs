@@ -79,7 +79,7 @@ export class ChatService {
       },
     });
 
-    return this.dtoTransformService.toClass(newChat, GetChatDto);
+    return this.chat({ id: newChat.id }, newChat.authorId);
   }
 
   async updateChat(params: {
